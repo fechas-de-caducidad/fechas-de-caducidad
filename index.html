@@ -69,7 +69,54 @@ video{width:100%;height:420px;object-fit:cover;border-radius:18px;background:#14
 <section class="screen" id="s-home">
   <div class="head"><div style="font-size:22px;font-weight:900;letter-spacing:2px">★ MERCA ★</div><small>Hola,</small><h2 id="hello" style="margin:4px 0">—</h2><p style="margin:0;color:#FFE3D1">Tus productos, sus vencimientos y tus alertas, en un solo lugar.</p></div>
   <div class="kpis"><div class="kpi" onclick="goFilter('all')"><b id="k-total">0</b><span>Total</span></div><div class="kpi" onclick="goFilter('soon')"><b id="k-soon">0</b><span>Por vencer</span></div><div class="kpi" onclick="goFilter('soon3')"><b id="k-tom">0</b><span>Vence en 3 días</span></div><div class="kpi" onclick="goFilter('exp')"><b id="k-exp">0</b><span>Vencidos</span></div></div>
-  <div class="card" id="banner" style="display:none;background:#1A120B;color:#fff"></div>   
+  <div class="card" id="banner" style="display:none;background:#1A120B;color:#fff"></div>
+  <div class="card" onclick="show('s-scan')" style="cursor:pointer"><b>📷 Escanear</b><br><small class="mut">Escanea un producto nuevo</small></div>
+  <div class="card" onclick="syncCloud(false)" style="cursor:pointer"><b>☁️ Sincronizar</b><br><small id="cloud-status" class="mut">Toca para sincronizar con la nube</small></div>
+  <div class="card" onclick="show('s-list')" style="cursor:pointer"><b>📋 Mi lista</b><br><small class="mut">Ver todos tus productos</small></div>
+</section>
+<!-- ESCANEAR -->
+<section class="screen" id="s-scan">
+  <h2>Escanear</h2>
+  <p class="mut" id="scan-msg">Toca Abrir cámara y apunta al código. Si no lo lee, usa la foto del código.</p>
+  <video id="vid" style="display:none;width:100%;height:420px;object-fit:cover;border-radius:16px;background:#000" playsinline muted></video>
+  <br><button class="btn btn-m" onclick="openCamera()">📷 Abrir cámara</button>
+  <br><br><label class="btn btn-w" style="display:block;text-align:center">📸 Foto del código<input type="file" accept="image/*" onchange="photoCode(this)" style="display:none"></label>
+  <br><button class="btn btn-w" onclick="stopCamera()">Detener cámara</button>
+  <div id="result" style="display:none" class="card">
+    <img id="res-photo" style="display:none;width:100%;max-height:420px;object-fit:cover;border-radius:14px" onclick="showPhotoFull()">
+    <h3 id="res-name"></h3>
+    <p id="res-info" class="mut"></p>
+    <p id="res-status"></p>
+    <div id="res-history" style="display:none;background:#FFF8D6;padding:12px;border-radius:12px;margin:10px 0"></div>
+    <label>Nombre (puedes cambiarlo)</label><input id="edit-name">
+    <div id="manual-name-wrap" style="display:none"><label>Nombre del producto</label><input id="custom-name" placeholder="Escribe el nombre"></div>
+    <label>Cantidad</label><input id="qty" type="number" value="1" min="1">
+    <label>Fecha de vencimiento</label>
+    <div style="display:flex;gap:8px"><select id="d-day"></select><select id="d-month"></select><select id="d-year"></select></div>
+    <br><button class="btn btn-m" id="save-btn" onclick="saveProduct()">Guardar producto ✓</button>
+    <br><br><label class="btn btn-w" style="display:block;text-align:center">Cambiar foto<input type="file" accept="image/*" onchange="photoProduct(this)" style="display:none"></label>
+    <br><button class="btn btn-w" onclick="showPhotoFull()">Ver foto en grande</button>
+    <br><br><button class="btn btn-w" onclick="rescan()">Volver a escanear</button>
+  </div>
+</section>
+<!-- LISTA -->
+<section class="screen" id="s-list">
+  <h2>Mi lista</h2>
+  <input id="search" placeholder="Buscar nombre o código" oninput="renderList()">
+  <div class="filters"><button class="filter on" id="f-all" onclick="setFilter('all')">Todos (0)</button><button class="filter" id="f-ok" onclick="setFilter('ok')">Buenos (0)</button><button class="filter" id="f-soon" onclick="setFilter('soon')">Por vencer (0)</button><button class="filter" id="f-exp" onclick="setFilter('exp')">Vencidos (0)</button></div>
+  <div id="list"></div>
+</section>
+<!-- ALERTAS -->
+<section class="screen" id="s-alerts">
+  <h2>Alertas</h2>
+  <div id="alerts"></div>
+</section>
+<!-- PERFIL -->
+<section class="screen" id="s-profile">
+  <h2>Perfil</h2>
+  <div class="card"><b id="p-name"></b><br><span id="p-user" class="mut"></span><br><small id="p-detail" class="mut"></small></div>
+  <div class="card"><b>Cuenta en la nube</b><br><label>Usuario en la nube</label><input id="cloud-user" value="ezeqy" placeholder="ezeqy"><br><button class="btn btn-m" onclick="syncCloud(false)">Sincronizar con la nube</button></div>
+  <button class="btn btn-w" onclick="show('s-welcome')">Cerrar sesión</button>
 </section>
 </div>
 <nav class="nav" id="nav" style="display:none">
@@ -96,7 +143,7 @@ function $(id){return document.getElementById(id)}
 function save(){localStorage.setItem(KEY,JSON.stringify({user:user,products:products}))}
 function toast(m){var t=$('toast');t.textContent=m;t.style.display='block';setTimeout(function(){t.style.display='none'},3500)}
 function click(){try{var c=new (window.AudioContext||window.webkitAudioContext)();var o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.frequency.value=1800;g.gain.setValueAtTime(.25,c.currentTime);g.gain.exponentialRampToValueAtTime(.001,c.currentTime+.15);o.start();o.stop(c.currentTime+.15)}catch(e){}}
-function show(id){document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('on');s.style.display='none'});$(id).classList.add('on');$(id).style.display='block';var navEl=$('nav');if(navEl)navEl.style.display=(id==='s-welcome'||id==='s-register')?'none':(user?'grid':'none');document.querySelectorAll('.nav button').forEach(function(b){b.classList.remove('on')});var n={ 's-home':'n-home','s-scan':'n-scan','s-list':'n-list','s-alerts':'n-alerts','s-profile':'n-profile'}[id];if(n)$(n).classList.add('on');if(id==='s-home')renderHome();if(id==='s-list')renderList();if(id==='s-alerts')renderAlerts();if(id==='s-profile')renderProfile();window.scrollTo(0,0)}
+function show(id){if(!$(id))return;document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('on');s.style.display='none'});$(id).classList.add('on');$(id).style.display='block';var navEl=$('nav');if(navEl)navEl.style.display=(id==='s-welcome'||id==='s-register')?'none':(user?'grid':'none');document.querySelectorAll('.nav button').forEach(function(b){b.classList.remove('on')});var n={ 's-home':'n-home','s-scan':'n-scan','s-list':'n-list','s-alerts':'n-alerts','s-profile':'n-profile'}[id];if(n)$(n).classList.add('on');if(id==='s-home')renderHome();if(id==='s-list')renderList();if(id==='s-alerts')renderAlerts();if(id==='s-profile')renderProfile();window.scrollTo(0,0)}
 function goContinue(){click();if(user)show('s-home');else show('s-register')}
 function createAccount(){var n=$('r-name').value.trim(),a=$('r-age').value.trim(),c=$('r-city').value.trim(),u=$('r-user').value.trim();if(!n||!a||!c||!u){toast('Llena nombre, edad, ciudad y usuario.');return}user={name:n,age:a,city:c,username:u};save();click();toast('¡Cuenta creada, '+n.split(' ')[0]+'!');show('s-home')}
 function fillDates(){var d=$('d-day'),m=$('d-month'),y=$('d-year');d.innerHTML='';for(var i=1;i<=31;i++)d.innerHTML+='<option>'+i+'</option>';var months=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];m.innerHTML='';months.forEach(function(mm,i){m.innerHTML+='<option value="'+(i+1)+'">'+mm+'</option>'});y.innerHTML='';for(var yr=2026;yr<=2035;yr++)y.innerHTML+='<option>'+yr+'</option>';var t=new Date();d.value=t.getDate();m.value=t.getMonth()+1;y.value=t.getFullYear()}
@@ -119,7 +166,7 @@ async function lookup(code){var saved=products.find(function(p){return p.code===
 function showPhotoFull(){var im=$('res-photo');var full=$('photo-full');var fim=$('photo-full-img');if(!im||!im.src||im.style.display==='none'){toast('Este producto todavía no tiene foto.');return}if(fim)fim.src=im.src;if(full)full.style.display='flex'}function rescan(){try{stopCamera()}catch(e){}var res=$('result');if(res)res.style.display='none';show('s-scan');try{openCamera()}catch(e){}}
 async function handleCode(code){if(!code)return;click();cur={code:code,name:'',brand:'',photo:'',photoWeb:'',unknown:false};var res=$('result');res.style.display='block';$('res-name').textContent='🔍 Buscando nombre y foto…';$('res-info').textContent='Código '+code+' — buscando en las bases gratis.';$('res-status').textContent='';$('res-photo').style.display='none';$('manual-name-wrap').style.display='none';var f=await lookup(code);var prev=products.filter(function(p){return p.code===code});var hist=$('res-history');var sb=$('save-btn');if(prev.length){if(hist){hist.style.display='block';hist.innerHTML='<b>⚠️ Este producto ya se escaneó '+prev.length+(prev.length===1?' vez':' veces')+'</b><br>'+prev.map(function(p){return '• Vence '+(p.expires||'—')+' · x'+(p.qty||1)}).join('<br>')+'<br>Agregar de nuevo no borra los anteriores.'}if(sb)sb.textContent='Agregar de nuevo ✓'}else{if(hist)hist.style.display='none';if(sb)sb.textContent='Guardar producto ✓'}var en=$('edit-name');if(en)en.value=f?(f.name||''):'';if(f){cur.name=f.name;cur.brand=f.brand;cur.photo=f.photo;cur.photoWeb=(f.photo||'').indexOf('http')===0?f.photo:'';$('res-name').textContent=f.name;$('res-info').textContent='Código '+code+(f.brand?' · '+f.brand:'');$('res-status').textContent=f.photo?'✓ Foto y nombre automáticos':'✓ Nombre automático · Falta la foto: tírale una con la cámara.';if(f.photo){var im=$('res-photo');im.src=f.photo;im.style.display='block';im.onerror=function(){im.style.display='none';$('res-status').textContent='La foto de internet no cargó. Tírale una foto al producto con la cámara.'}}}else{cur.unknown=true;$('res-name').textContent='Producto nuevo';$('res-info').textContent='Código '+code+' · No encontrado';$('res-status').textContent='Ponle nombre y tírale una foto: quedará guardado para la próxima vez.';$('manual-name-wrap').style.display='block';$('custom-name').value=''}toast('¡CLIC! '+(f?f.name:'Código leído'))}
 function saveProduct(){if(!cur)return;var en=$('edit-name');var name=(en&&en.value.trim())||(cur.unknown?$('custom-name').value.trim():cur.name);if(!name){toast('Ponle un nombre al producto.');return}var iso=$('d-year').value+'-'+String($('d-month').value).padStart(2,'0')+'-'+String($('d-day').value).padStart(2,'0');products.push({code:cur.code,name:name,brand:cur.brand||'',photo:cur.photo||'',photoWeb:cur.photoWeb||((cur.photo||'').indexOf('http')===0?cur.photo:''),qty:parseInt($('qty').value)||1,expires:iso});save();try{if(localStorage.getItem('fd_cloud_user'))syncCloud()}catch(e){};click();toast('Guardado: '+name);$('result').style.display='none';show('s-list')}
-show('s-welcome');try{if(user&&localStorage.getItem('fd_cloud_user'))syncCloud(true)}catch(e){}setInterval(function(){try{if(user&&localStorage.getItem('fd_cloud_user')&&!document.hidden)syncCloud(true)}catch(e){}},60000);document.addEventListener('visibilitychange',function(){if(!document.hidden&&user&&localStorage.getItem('fd_cloud_user')){try{syncCloud(true)}catch(e){}}})
+show('s-welcome');try{if(user)syncCloud(true)}catch(e){}setInterval(function(){try{if(user&&!document.hidden)syncCloud(true)}catch(e){}},60000);document.addEventListener('visibilitychange',function(){if(!document.hidden&&user){try{syncCloud(true)}catch(e){}}})
 </script>
 <div id="photo-full" style="display:none;position:fixed;inset:0;background:#000;z-index:100;align-items:center;justify-content:center" onclick="this.style.display='none'"><img id="photo-full-img" style="max-width:95%;max-height:95%;border-radius:12px"></div>
 </body>
