@@ -200,6 +200,6 @@ function saveProduct(){if(!cur)return;var en=$('edit-name');var name=(en&&en.val
 show('s-welcome');try{if(user)syncCloud(true)}catch(e){}setInterval(function(){try{if(user&&!document.hidden)syncCloud(true)}catch(e){}},60000);document.addEventListener('visibilitychange',function(){if(document.hidden){try{stopCamera()}catch(e){}show('s-welcome')}else if(user){show('s-welcome');try{syncCloud(true)}catch(e){}}})
 window.addEventListener('pagehide',function(){try{show('s-welcome')}catch(e){}})
 </script>
-<div id="photo-full" style="display:none;position:fixed;inset:0;background:#000;z-index:100;align-items:center;justify-content:center" onclick="this.style.display='none'"><img id="photo-full-img" style="max-width:95%;max-height:95%;border-radius:12px"></div>
+<div id="photo-full" style="display:none;position:fixed;inset:0;background:#000;z-index:100;align-items:center;justify-content:center;flex-direction:column;padding:16px;padding-bottom:calc(24px + env(safe-area-inset-bottom))" onclick="this.style.display='none'"><img id="photo-full-img" style="max-width:95%;max-height:78%;border-radius:12px;object-fit:contain"><button onclick="document.getElementById('photo-full').style.display='none'" style="width:min(420px,90%);margin-top:20px;border:0;border-radius:16px;padding:22px;background:#FF5A00;color:#fff;font-weight:900;font-size:22px;box-shadow:0 10px 22px rgba(255,90,0,.35)">✕ Salir</button></div>
 </body>
 </html>
