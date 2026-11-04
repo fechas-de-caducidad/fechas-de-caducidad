@@ -151,7 +151,18 @@ var filter='all', cur=null, stream=null, timer=null;
 var LOCAL={'5760466986885':{name:'Leche Milex',brand:'Arla, Milex',photo:'https://images.openfoodfacts.org/images/products/576/046/698/6885/front_es.4.400.jpg'},
 '7460199505190':{name:'Salchichón de Lomo',brand:'Induveca',photo:''},
 '7460199599298':{name:'Salami Keto Don Pedro',brand:'Don Pedro',photo:''},
-'7460111171106':{name:'Leche La Vaquita 1L',brand:'Rica',photo:''}};
+'7460111171106':{name:'Leche La Vaquita 1L',brand:'Rica',photo:''},
+'7460199565484':{name:'Slender Yogurt De Fresa',brand:'Yoka',photo:'https://images.openfoodfacts.org/images/products/746/019/956/5484/front_es.13.400.jpg'},
+'0790330006796':{name:'Rigurt Vainilla',brand:'Rica',photo:'https://images.openfoodfacts.org/images/products/079/033/000/6796/front_es.3.400.jpg'},
+'0790330006741':{name:'Rigurt',brand:'Rica',photo:''},
+'7460193547240':{name:'Yogurt Griego',brand:'Origen',photo:'https://images.openfoodfacts.org/images/products/746/019/354/7240/front_es.8.400.jpg'},
+'7460193547219':{name:'Yogurt Griego Fresa',brand:'Nacional',photo:'https://images.openfoodfacts.org/images/products/746/019/354/7219/front_es.3.400.jpg'},
+'7466772506608':{name:'Griego',brand:'Sigma alimentos',photo:'https://images.openfoodfacts.org/images/products/746/677/250/6608/front_en.19.400.jpg'},
+'7441001635083':{name:'yogurt griego',brand:'Dos pinos',photo:'https://images.openfoodfacts.org/images/products/744/100/163/5083/front_es.24.400.jpg'},
+'8002710403128':{name:'Cream cheese',brand:'Zanetti',photo:'https://images.openfoodfacts.org/images/products/800/271/040/3128/front_es.3.400.jpg'},
+'7463979470084':{name:'Burrata',brand:'',photo:'https://images.openfoodfacts.org/images/products/746/397/947/0084/front_fr.3.400.jpg'},
+'2301439000653':{name:'Queso Ricotta',brand:'MuBravo',photo:'https://images.openfoodfacts.org/images/products/230/143/900/0653/front_es.3.400.jpg'},
+'0790330004150':{name:'Crema De Leche',brand:'Rica',photo:''}};
 function $(id){return document.getElementById(id)}
 function save(){localStorage.setItem(KEY,JSON.stringify({user:user,products:products}))}
 function prodKey(p){return (p.code||'')+'|'+(p.expires||'')+'|'+(p.name||'')}
