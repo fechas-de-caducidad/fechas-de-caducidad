@@ -39,3 +39,4 @@ self.addEventListener('notificationclick', function (event) {
     })
   );
 });
+// Activar despliegue de Pages (reintento tras a63e7e4).
